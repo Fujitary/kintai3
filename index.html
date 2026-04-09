@@ -483,10 +483,8 @@ window.signInWithGoogle = async () => {
     const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
 
     if (isMobile && !isStandalone) {
-      // ブラウザのiPhoneはリダイレクト
       await signInWithRedirect(auth, provider);
     } else {
-      // PCまたはPWAスタンドアロンはポップアップ
       await signInWithPopup(auth, provider);
     }
   } catch(e) {
@@ -503,14 +501,14 @@ window.signOut = async () => {
 // リダイレクト後の結果を処理
 getRedirectResult(auth)
   .then(result => {
-    // resultがあればonAuthStateChangedが自動で拾うので何もしなくてOK
-    // ただしエラー握りつぶしを防ぐためにここに書く
+    if (result?.user) {
+      console.log('redirect login success:', result.user.email);
+    }
   })
   .catch(e => {
     console.warn('redirect result error:', e);
-    // unauthorized_domainエラーの場合はFirebaseコンソールの設定が原因
     if (e.code === 'auth/unauthorized-domain') {
-      alert('このドメインがFirebaseに登録されていません。\nfujitary.github.io を承認済みドメインに追加してください。');
+      alert('ドメインが承認されていません');
     }
   });
 
