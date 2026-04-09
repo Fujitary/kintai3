@@ -951,7 +951,7 @@ window.bgClick    = (e, id) => { if (e.target===e.currentTarget) closeModal(id);
 function showScreen(name) {
   document.getElementById('screen-loading').style.display = name==='loading' ? 'flex' : 'none';
   document.getElementById('screen-login').style.display   = name==='login'   ? 'flex' : 'none';
-  document.getElementById('screen-app').style.display     = name==='app'     ? 'block' : 'none';
+  document.getElementById('screen-app').style.display     = name==='app'     ? 'flex' : 'none';
   if (name==='app') {
     document.getElementById('month-label').textContent = `${S.curYear}.${pad(S.curMonth+1)}`;
   }
