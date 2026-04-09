@@ -430,10 +430,14 @@ const firebaseConfig = {
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
+// 復元用グローバル公開
+window._db = db;
+window._auth = auth;
 
 // ── State ────────────────────────────────────────────────
 const U_COLORS = ['#2563EB','#E24B4A','#1D9E75','#F59E0B','#8B5CF6','#EC4899','#0891B2','#7C3AED'];
-let currentUser = null;   // Firebase user object
+let currentUser = null;
+window._getCurrentUser = () => currentUser;  // Firebase user object
 let S = {
   projects: [],
   records:  [],
@@ -987,23 +991,22 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').ca
 <!-- データ復元ボタン（復元後に削除する） -->
 <button id="restore-btn" onclick="restoreFromSheet()" style="position:fixed;bottom:80px;right:16px;z-index:999;background:#E24B4A;color:white;border:none;border-radius:12px;padding:12px 16px;font-size:14px;font-family:'Noto Sans JP',sans-serif;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.3);">📥 データ復元</button>
 
-<script type="module">
-import { setDoc, doc, collection } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js';
-
+<script>
 window.restoreFromSheet = async () => {
-  if (!currentUser) { alert('ログインしてください'); return; }
+  const user = window._currentUser;
+  if (!user) { alert('ログインしてください'); return; }
   if (!confirm('スプレッドシートのデータを復元しますか？')) return;
 
-  const records = [{"id":"r1775078790576","projectId":"p1775076000286","projectName":"動画編集","start":null,"end":null,"duration":2772000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775090067315","projectId":"p1775086097573","projectName":"高仙の里よの","start":null,"end":null,"duration":3960000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775098725081","projectId":"p1775098240840","projectName":"情報発信","start":null,"end":null,"duration":468000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775103520730","projectId":"p1775098240840","projectName":"情報発信","start":null,"end":null,"duration":1764000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775107286241","projectId":"p1775076000286","projectName":"動画編集","start":null,"end":null,"duration":1836000,"memo":"アーカイブ納品","syncStatus":"synced","createdAt":null},{"id":"r1775149773020","projectId":"p1775078899824","projectName":"睡眠","start":null,"end":null,"duration":16272000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775162099247","projectId":"p1775076000286","projectName":"動画編集","start":null,"end":null,"duration":10512000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775175108533","projectId":"p1775086097573","projectName":"高仙の里よの","start":null,"end":null,"duration":3744000,"memo":"なつつばきゴミ捨て","syncStatus":"synced","createdAt":null},{"id":"r1775203729880","projectId":"p1775175540896","projectName":"manabo-de","start":null,"end":null,"duration":26496000,"memo":"風呂場DIY","syncStatus":"synced","createdAt":null},{"id":"r1775240427201","projectId":"p1775078899824","projectName":"睡眠","start":null,"end":null,"duration":27432000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775253042202","projectId":"p1775076000286","projectName":"動画編集","start":null,"end":null,"duration":11088000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775288623509","projectId":"p1775076000286","projectName":"動画編集","start":null,"end":null,"duration":11844000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775297515040","projectId":"p1775076000286","projectName":"動画編集","start":null,"end":null,"duration":2520000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775307987543","projectId":"p1775076000286","projectName":"動画編集","start":null,"end":null,"duration":5472000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775334764050","projectId":"p1775078899824","projectName":"睡眠","start":null,"end":null,"duration":24444000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775339578964","projectId":"p1775175540896","projectName":"manabo-de","start":null,"end":null,"duration":3528000,"memo":"システム開発","syncStatus":"synced","createdAt":null},{"id":"r1775426088159","projectId":"p1775175540896","projectName":"manabo-de","start":null,"end":null,"duration":1620000,"memo":"システム開発","syncStatus":"synced","createdAt":null},{"id":"r1775426132544","projectId":"p1775078899824","projectName":"睡眠","start":null,"end":null,"duration":36000,"memo":"前日21:00から翌日6時まで","syncStatus":"synced","createdAt":null},{"id":"r1775446054504","projectId":"p1775086097573","projectName":"高仙の里よの","start":null,"end":null,"duration":9072000,"memo":"8:45から勤務","syncStatus":"synced","createdAt":null},{"id":"r1775509034780","projectId":"p1775078899824","projectName":"睡眠","start":null,"end":null,"duration":34668000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775519854504","projectId":"p1775033669408","projectName":"動画作成テスト","start":null,"end":null,"duration":0,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775548821533","projectId":"p1775175540896","projectName":"manabo-de","start":null,"end":null,"duration":29808000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775594554790","projectId":"p1775078899824","projectName":"睡眠","start":null,"end":null,"duration":33084000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775609700139","projectId":"p1775086097573","projectName":"高仙の里よの","start":null,"end":null,"duration":4860000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775612400767","projectId":"p1775609729233","projectName":"教育活動","start":null,"end":null,"duration":2664000,"memo":"三ツ教育長打ち合わせ","syncStatus":"synced","createdAt":null},{"id":"r1775622500983","projectId":"p1775614561787","projectName":"その他","start":null,"end":null,"duration":7920000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775632394797","projectId":"p1775086097573","projectName":"高仙の里よの","start":null,"end":null,"duration":3384000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775677670466","projectId":"p1775078899824","projectName":"睡眠","start":null,"end":null,"duration":21348000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775681417326","projectId":"p1775614561787","projectName":"その他","start":null,"end":null,"duration":2952000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775694966500","projectId":"p1775694947119","projectName":"高仙の里よの","start":null,"end":null,"duration":0,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775695882409","projectId":"p1775694947119","projectName":"高仙の里よの","start":null,"end":null,"duration":900000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775696031607","projectId":"p1775695993282","projectName":"テスト","start":null,"end":null,"duration":36000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775707472318","projectId":"p1775694947119","projectName":"高仙の里よの","start":null,"end":null,"duration":11052000,"memo":"テスト入力","syncStatus":"synced","createdAt":null},{"id":"r1775707500748","projectId":"p1775696685053","projectName":"高仙の里よの","start":null,"end":null,"duration":10800000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775715549828","projectId":"p1775696685053","projectName":"高仙の里よの","start":null,"end":null,"duration":0,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775715571445","projectId":"p1775696685053","projectName":"高仙の里よの","start":null,"end":null,"duration":0,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775715573491","projectId":"p1775338903730","projectName":"manabo-de","start":null,"end":null,"duration":5940000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775715818538","projectId":"p1775696685053","projectName":"高仙の里よの","start":null,"end":null,"duration":0,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775723924852","projectId":"p1775723264234","projectName":"manabo-de","start":null,"end":null,"duration":648000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775759557313","projectId":"p1775736563845","projectName":"睡眠","start":null,"end":null,"duration":23004000,"memo":"","syncStatus":"synced","createdAt":null},{"id":"r1775760205387","projectId":"p1775759994401","projectName":"事務作業","start":null,"end":null,"duration":216000,"memo":"","syncStatus":"synced","createdAt":null}];
+  const records = [ここにJSONを貼り付け];
 
   let count = 0;
   for (const r of records) {
-    await setDoc(doc(db, 'users', currentUser.uid, 'records', r.id), r);
+    await window._setDoc(window._recordDoc(r.id), r);
     count++;
   }
   alert(`${count}件復元しました！`);
   location.reload();
 };
-</script>  
+</script>
 </body>
 </html>
