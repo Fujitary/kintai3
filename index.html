@@ -474,10 +474,15 @@ const recordDoc   = id  => doc(db, 'users', currentUser.uid, 'records', id);
 window.signInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
   try {
-    // モバイルはリダイレクト方式の方が安定
-    if (/iPhone|iPad|Android/i.test(navigator.userAgent)) {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                      || window.navigator.standalone === true;
+    const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
+
+    if (isMobile && !isStandalone) {
+      // ブラウザのiPhoneはリダイレクト
       await signInWithRedirect(auth, provider);
     } else {
+      // PCまたはPWAスタンドアロンはポップアップ
       await signInWithPopup(auth, provider);
     }
   } catch(e) {
@@ -485,7 +490,6 @@ window.signInWithGoogle = async () => {
     alert('サインインに失敗しました: ' + e.message);
   }
 };
-
 window.signOut = async () => {
   if (!confirm('サインアウトしますか？')) return;
   stopListeners();
