@@ -478,18 +478,15 @@ const recordDoc   = id  => doc(db, 'users', currentUser.uid, 'records', id);
 window.signInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
   try {
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-                      || window.navigator.standalone === true;
-    const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
-
-    if (isMobile && !isStandalone) {
-      await signInWithRedirect(auth, provider);
-    } else {
-      await signInWithPopup(auth, provider);
-    }
+    await signInWithPopup(auth, provider);
   } catch(e) {
     console.error(e);
-    alert('サインインに失敗しました: ' + e.message);
+    // ポップアップがブロックされた場合はリダイレクトで再試行
+    if (e.code === 'auth/popup-blocked' || e.code === 'auth/popup-closed-by-user') {
+      await signInWithRedirect(auth, provider);
+    } else {
+      alert('サインインに失敗しました: ' + e.message);
+    }
   }
 };
 window.signOut = async () => {
