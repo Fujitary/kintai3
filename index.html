@@ -729,27 +729,40 @@ function renderProjects() {
       <button class="del-btn" onclick="event.stopPropagation();deleteProject('${p.id}')">✕</button>
     `;
     card.onclick = () => selectProject(p.id);
-    if (editMode) {
-      card.addEventListener('dragstart', e => {
-        e.dataTransfer.setData('text/plain', p.id);
-        card.style.opacity = '0.5';
-      });
-      card.addEventListener('dragend', () => { card.style.opacity = ''; });
-      card.addEventListener('dragover', e => { e.preventDefault(); card.style.background = 'var(--accent-light)'; });
-      card.addEventListener('dragleave', () => { card.style.background = ''; });
-      card.addEventListener('drop', async e => {
-        e.preventDefault();
-        card.style.background = '';
-        const fromId = e.dataTransfer.getData('text/plain');
-        if (fromId === p.id) return;
-        const fromIdx = S.projects.findIndex(x => x.id === fromId);
-        const toIdx   = S.projects.findIndex(x => x.id === p.id);
-        const newProjects = [...S.projects];
-        const [moved] = newProjects.splice(fromIdx, 1);
-        newProjects.splice(toIdx, 0, moved);
-        for (let i = 0; i < newProjects.length; i++) {
-          await setDoc(projectDoc(newProjects[i].id), { createdAt: i * 1000 }, { merge: true });
-        }
+ if (editMode) {
+  // PC用ドラッグ
+  card.addEventListener('dragstart', e => {
+    e.dataTransfer.setData('text/plain', p.id);
+    card.style.opacity = '0.5';
+  });
+  card.addEventListener('dragend', () => { card.style.opacity = ''; });
+  card.addEventListener('dragover', e => { e.preventDefault(); card.style.background = 'var(--accent-light)'; });
+  card.addEventListener('dragleave', () => { card.style.background = ''; });
+  card.addEventListener('drop', async e => {
+    e.preventDefault();
+    card.style.background = '';
+    const fromId = e.dataTransfer.getData('text/plain');
+    if (fromId === p.id) return;
+    await swapProjects(fromId, p.id);
+  });
+
+  // タッチ用
+  let touchStartId = null;
+  card.addEventListener('touchstart', e => {
+    touchStartId = p.id;
+    card.style.opacity = '0.5';
+  }, { passive: true });
+  card.addEventListener('touchend', async e => {
+    card.style.opacity = '';
+    if (!touchStartId || touchStartId === p.id) { touchStartId = null; return; }
+    const touch = e.changedTouches[0];
+    const target = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.project-card');
+    if (target && target.dataset.id && target.dataset.id !== touchStartId) {
+      await swapProjects(touchStartId, target.dataset.id);
+    }
+    touchStartId = null;
+  });
+}
       });
     }
     list.appendChild(card);
