@@ -709,13 +709,16 @@ function renderProjects() {
   if (!list) return;
   list.innerHTML = '';
   list.classList.toggle('edit-mode', editMode);
-  S.projects.forEach(p => {
+  S.projects.forEach((p, idx) => {
     const ms = monthRecs().filter(r=>r.projectId===p.id).reduce((a,r)=>a+r.duration,0);
     const isSel    = S.selProj === p.id && !editMode;
     const isActive = S.session?.projectId === p.id;
     const card = document.createElement('div');
     card.className = 'project-card'+(isSel?' selected':'')+(isActive?' has-active':'');
+    card.draggable = editMode;
+    card.dataset.id = p.id;
     card.innerHTML = `
+      ${editMode ? '<span class="drag-handle">⠿</span>' : ''}
       <span class="dot" style="background:${p.color}"></span>
       <span class="pname">${p.name}</span>
       <span class="ptime">${fmtH(ms)}</span>
@@ -723,6 +726,33 @@ function renderProjects() {
       <button class="del-btn" onclick="event.stopPropagation();deleteProject('${p.id}')">✕</button>
     `;
     card.onclick = () => selectProject(p.id);
+
+    // ドラッグ
+    if (editMode) {
+      card.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('text/plain', p.id);
+        card.style.opacity = '0.5';
+      });
+      card.addEventListener('dragend', () => { card.style.opacity = ''; });
+      card.addEventListener('dragover', e => { e.preventDefault(); card.style.background = 'var(--accent-light)'; });
+      card.addEventListener('dragleave', () => { card.style.background = ''; });
+      card.addEventListener('drop', async e => {
+        e.preventDefault();
+        card.style.background = '';
+        const fromId = e.dataTransfer.getData('text/plain');
+        if (fromId === p.id) return;
+        const fromIdx = S.projects.findIndex(x => x.id === fromId);
+        const toIdx   = S.projects.findIndex(x => x.id === p.id);
+        const newProjects = [...S.projects];
+        const [moved] = newProjects.splice(fromIdx, 1);
+        newProjects.splice(toIdx, 0, moved);
+        // createdAtを更新して順序を保存
+        for (let i = 0; i < newProjects.length; i++) {
+          newProjects[i].createdAt = i * 1000;
+          await setDoc(projectDoc(newProjects[i].id), { createdAt: i * 1000 }, { merge: true });
+        }
+      });
+    }
     list.appendChild(card);
   });
 }
