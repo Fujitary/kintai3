@@ -4,7 +4,7 @@
 // ============================================================
 
 // ▼ スプレッドシートのID（URLの /d/xxxxx/edit の xxxxx 部分）
-const SPREADSHEET_ID = 'ここにスプレッドシートIDを貼り付け';
+const SPREADSHEET_ID = '1rpm7FsyCHFwNUKpfTGBKweyP_GW0bG60IO_LsFGTvCE';
 
 // ============================================================
 // POST リクエスト受信（アプリ → スプレッドシート）
