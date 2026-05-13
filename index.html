@@ -756,8 +756,7 @@ function renderProjects() {
   });
 }
 
-④ syncFromSheet 関数を追加（// Service Worker の直前に）：
-jswindow.syncFromSheet = async () => {
+window.syncFromSheet = async () => {
   if (!S.gasUrl) { alert('GASを接続してください'); return; }
   const btn = document.getElementById('sync-btn');
   btn.textContent = '同期中...';
