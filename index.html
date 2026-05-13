@@ -712,7 +712,7 @@ function renderProjects() {
   if (!list) return;
   list.innerHTML = '';
   list.classList.toggle('edit-mode', editMode);
-  S.projects.forEach((p) => {
+  S.projects.forEach(p => {
     const ms = monthRecs().filter(r=>r.projectId===p.id).reduce((a,r)=>a+r.duration,0);
     const isSel    = S.selProj === p.id && !editMode;
     const isActive = S.session?.projectId === p.id;
@@ -729,40 +729,38 @@ function renderProjects() {
       <button class="del-btn" onclick="event.stopPropagation();deleteProject('${p.id}')">✕</button>
     `;
     card.onclick = () => selectProject(p.id);
- if (editMode) {
-  // PC用ドラッグ
-  card.addEventListener('dragstart', e => {
-    e.dataTransfer.setData('text/plain', p.id);
-    card.style.opacity = '0.5';
-  });
-  card.addEventListener('dragend', () => { card.style.opacity = ''; });
-  card.addEventListener('dragover', e => { e.preventDefault(); card.style.background = 'var(--accent-light)'; });
-  card.addEventListener('dragleave', () => { card.style.background = ''; });
-  card.addEventListener('drop', async e => {
-    e.preventDefault();
-    card.style.background = '';
-    const fromId = e.dataTransfer.getData('text/plain');
-    if (fromId === p.id) return;
-    await swapProjects(fromId, p.id);
-  });
-
-  // タッチ用
-  let touchStartId = null;
-  card.addEventListener('touchstart', e => {
-    touchStartId = p.id;
-    card.style.opacity = '0.5';
-  }, { passive: true });
-  card.addEventListener('touchend', async e => {
-    card.style.opacity = '';
-    if (!touchStartId || touchStartId === p.id) { touchStartId = null; return; }
-    const touch = e.changedTouches[0];
-    const target = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.project-card');
-    if (target && target.dataset.id && target.dataset.id !== touchStartId) {
-      await swapProjects(touchStartId, target.dataset.id);
+    if (editMode) {
+      card.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('text/plain', p.id);
+        card.style.opacity = '0.5';
+      });
+      card.addEventListener('dragend', () => { card.style.opacity = ''; });
+      card.addEventListener('dragover', e => { e.preventDefault(); card.style.background = 'var(--accent-light)'; });
+      card.addEventListener('dragleave', () => { card.style.background = ''; });
+      card.addEventListener('drop', async e => {
+        e.preventDefault();
+        card.style.background = '';
+        const fromId = e.dataTransfer.getData('text/plain');
+        if (fromId === p.id) return;
+        await swapProjects(fromId, p.id);
+      });
+      let touchStartId = null;
+      card.addEventListener('touchstart', e => {
+        touchStartId = p.id;
+        card.style.opacity = '0.5';
+      }, { passive: true });
+      card.addEventListener('touchend', async e => {
+        card.style.opacity = '';
+        if (!touchStartId || touchStartId === p.id) { touchStartId = null; return; }
+        const touch = e.changedTouches[0];
+        const target = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.project-card');
+        if (target && target.dataset.id && target.dataset.id !== touchStartId) {
+          await swapProjects(touchStartId, target.dataset.id);
+        }
+        touchStartId = null;
+      });
     }
-    touchStartId = null;
-  });
-  list.appendChild(card);
+    list.appendChild(card);
   });
 }
 window.syncFromSheet = async () => {
