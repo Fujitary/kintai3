@@ -1,5 +1,4 @@
-// Service Worker - 勤怠記録 PWA
-const CACHE = 'kintai-v1';
+const CACHE = 'kintai-v3';
 const ASSETS = [
   './index.html',
   './manifest.json',
@@ -21,8 +20,22 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // GAS への通信はキャッシュしない
   if (e.request.url.includes('script.google.com')) return;
+  if (e.request.url.includes('firestore.googleapis.com')) return;
+  if (e.request.url.includes('firebase')) return;
+  if (e.request.method !== 'GET') return;
+
+  // index.html はネットワーク優先
+  if (e.request.url.endsWith('/kintai3/') || e.request.url.endsWith('index.html')) {
+    e.respondWith(
+      fetch(e.request).then(res => {
+        const clone = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, clone));
+        return res;
+      }).catch(() => caches.match('./index.html'))
+    );
+    return;
+  }
 
   e.respondWith(
     caches.match(e.request).then(cached => {
