@@ -762,8 +762,9 @@ function renderProjects() {
     }
     touchStartId = null;
   });
-    list.appendChild(card);
-
+  list.appendChild(card);
+  });
+}
 window.syncFromSheet = async () => {
   if (!S.gasUrl) { alert('GASを接続してください'); return; }
   const btn = document.getElementById('sync-btn');
