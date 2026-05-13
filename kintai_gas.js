@@ -236,3 +236,26 @@ function jsonResponse(obj) {
 function doOptions(e) {
   return ContentService.createTextOutput('').setMimeType(ContentService.MimeType.TEXT);
 }
+
+// ── シートからFirestoreへ同期 ────────────────────────
+window.syncFromSheet = async () => {
+  if (!S.gasUrl) { alert('GASを接続してください'); return; }
+  const btn = document.getElementById('sync-btn');
+  btn.textContent = '同期中...';
+  btn.disabled = true;
+  try {
+    const res = await gasPost({ action: 'get_records', userName: gasUserName() });
+    if (!res || !res.records) { alert('データ取得失敗'); return; }
+    let count = 0;
+    for (const r of res.records) {
+      await setDoc(recordDoc(r.id), r, { merge: true });
+      count++;
+    }
+    alert(`${count}件を同期しました`);
+  } catch(e) {
+    alert('エラー: ' + e.message);
+  } finally {
+    btn.textContent = '↓ 同期';
+    btn.disabled = false;
+  }
+};
