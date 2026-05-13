@@ -142,6 +142,7 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
 .add-project-row .add-btn { padding: 10px 12px; font-size: 13px; border-radius: 10px; border: 0.5px solid var(--border); background: var(--surface2); cursor: pointer; color: var(--text); font-family: 'Noto Sans JP', sans-serif; touch-action: manipulation; white-space: nowrap; flex-shrink: 0; }
 .edit-toggle { padding: 10px 12px; font-size: 12px; font-weight: 700; border-radius: 10px; border: 0.5px solid var(--border); background: var(--surface); cursor: pointer; color: var(--muted); font-family: 'Noto Sans JP', sans-serif; touch-action: manipulation; white-space: nowrap; flex-shrink: 0; }
 .edit-toggle.on { background: var(--danger-light); color: var(--danger); border-color: var(--danger); }
+.drag-handle { font-size: 18px; color: var(--muted); cursor: grab; margin-right: 4px; flex-shrink: 0; }
 
 /* ── Sync indicator ── */
 .sync-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-left: 4px; vertical-align: middle; }
@@ -279,6 +280,8 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
           <button onclick="changeMonth(1)">›</button>
         </div>
         <button class="gas-badge disconnected" id="gas-badge" onclick="openModal('gas-modal')">GAS</button>
+        <button class="gas-badge" id="gas-badge" onclick="openModal('gas-modal')">GAS</button>
+        <button class="gas-badge connected" id="sync-btn" onclick="syncFromSheet()" style="background:var(--accent-light);color:var(--accent-text);">↓同期</button>
       </div>
     </div>
 
@@ -709,7 +712,7 @@ function renderProjects() {
   if (!list) return;
   list.innerHTML = '';
   list.classList.toggle('edit-mode', editMode);
-  S.projects.forEach((p, idx) => {
+  S.projects.forEach((p) => {
     const ms = monthRecs().filter(r=>r.projectId===p.id).reduce((a,r)=>a+r.duration,0);
     const isSel    = S.selProj === p.id && !editMode;
     const isActive = S.session?.projectId === p.id;
@@ -726,8 +729,6 @@ function renderProjects() {
       <button class="del-btn" onclick="event.stopPropagation();deleteProject('${p.id}')">✕</button>
     `;
     card.onclick = () => selectProject(p.id);
-
-    // ドラッグ
     if (editMode) {
       card.addEventListener('dragstart', e => {
         e.dataTransfer.setData('text/plain', p.id);
@@ -746,9 +747,7 @@ function renderProjects() {
         const newProjects = [...S.projects];
         const [moved] = newProjects.splice(fromIdx, 1);
         newProjects.splice(toIdx, 0, moved);
-        // createdAtを更新して順序を保存
         for (let i = 0; i < newProjects.length; i++) {
-          newProjects[i].createdAt = i * 1000;
           await setDoc(projectDoc(newProjects[i].id), { createdAt: i * 1000 }, { merge: true });
         }
       });
@@ -756,6 +755,30 @@ function renderProjects() {
     list.appendChild(card);
   });
 }
+
+④ syncFromSheet 関数を追加（// Service Worker の直前に）：
+jswindow.syncFromSheet = async () => {
+  if (!S.gasUrl) { alert('GASを接続してください'); return; }
+  const btn = document.getElementById('sync-btn');
+  btn.textContent = '同期中...';
+  btn.disabled = true;
+  try {
+    const url = `${S.gasUrl}?action=get_records&year=${S.curYear}&month=${S.curMonth+1}&userName=${encodeURIComponent(gasUserName())}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!data || !data.records) { alert('データ取得失敗'); return; }
+    for (const r of data.records) {
+      await setDoc(recordDoc(r.id), r, { merge: true });
+    }
+    alert(`${data.records.length}件を同期しました`);
+  } catch(e) {
+    alert('エラー: ' + e.message);
+  } finally {
+    btn.textContent = '↓同期';
+    btn.disabled = false;
+  }
+};
+
 
 // ── Records ──────────────────────────────────────────────
 function renderLog() {
@@ -994,7 +1017,29 @@ window.installPWA = () => {
 
 // Service Worker
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+window.syncFromSheet = async () => {
+  if (!S.gasUrl) { alert('GASを接続してください'); return; }
+  const btn = document.getElementById('sync-btn');
+  btn.textContent = '同期中...';
+  btn.disabled = true;
+  try {
+    const url = `${S.gasUrl}?action=get_records&year=${S.curYear}&month=${S.curMonth+1}&userName=${encodeURIComponent(gasUserName())}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!data || !data.records) { alert('データ取得失敗'); return; }
+    for (const r of data.records) {
+      await setDoc(recordDoc(r.id), r, { merge: true });
+    }
+    alert(`${data.records.length}件を同期しました`);
+  } catch(e) {
+    alert('エラー: ' + e.message);
+  } finally {
+    btn.textContent = '↓同期';
+    btn.disabled = false;
+  }
+};
 
+  
 </script>
 
 </body>
