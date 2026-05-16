@@ -133,6 +133,7 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
 .projects.edit-mode .project-card .active-badge { display: none; }
 .projects.edit-mode .project-card .del-btn { display: flex; }
 @keyframes wobble { 0%{transform:rotate(-1.5deg)} 100%{transform:rotate(1.5deg)} }
+.drag-handle { font-size: 18px; color: var(--muted); cursor: grab; margin-right: 4px; flex-shrink: 0; }
 
 .projects-footer { display: flex; gap: 7px; margin-bottom: 16px; align-items: stretch; }
 .add-project-row { display: flex; gap: 7px; flex: 1; min-width: 0; }
@@ -142,7 +143,6 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
 .add-project-row .add-btn { padding: 10px 12px; font-size: 13px; border-radius: 10px; border: 0.5px solid var(--border); background: var(--surface2); cursor: pointer; color: var(--text); font-family: 'Noto Sans JP', sans-serif; touch-action: manipulation; white-space: nowrap; flex-shrink: 0; }
 .edit-toggle { padding: 10px 12px; font-size: 12px; font-weight: 700; border-radius: 10px; border: 0.5px solid var(--border); background: var(--surface); cursor: pointer; color: var(--muted); font-family: 'Noto Sans JP', sans-serif; touch-action: manipulation; white-space: nowrap; flex-shrink: 0; }
 .edit-toggle.on { background: var(--danger-light); color: var(--danger); border-color: var(--danger); }
-.drag-handle { font-size: 18px; color: var(--muted); cursor: grab; margin-right: 4px; flex-shrink: 0; }
 
 /* ── Sync indicator ── */
 .sync-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-left: 4px; vertical-align: middle; }
@@ -228,7 +228,7 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
 .account-email { font-size: 12px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .steps { background: var(--surface2); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; font-size: 12px; color: var(--muted); line-height: 2.1; }
-.steps b { color: var(--text); font-weight: 600; }  
+.steps b { color: var(--text); font-weight: 600; }
 </style>
 </head>
 <body>
@@ -280,7 +280,6 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
           <button onclick="changeMonth(1)">›</button>
         </div>
         <button class="gas-badge disconnected" id="gas-badge" onclick="openModal('gas-modal')">GAS</button>
-        <button class="gas-badge" id="gas-badge" onclick="openModal('gas-modal')">GAS</button>
         <button class="gas-badge connected" id="sync-btn" onclick="syncFromSheet()" style="background:var(--accent-light);color:var(--accent-text);">↓同期</button>
       </div>
     </div>
@@ -421,13 +420,11 @@ const auth = getAuth(app);
 const db   = getFirestore(app);
 
 // ── State ────────────────────────────────────────────────
-const U_COLORS = ['#2563EB','#E24B4A','#1D9E75','#F59E0B','#8B5CF6','#EC4899','#0891B2','#7C3AED'];
 let currentUser = null;
-// Firebase user object
 let S = {
   projects: [],
   records:  [],
-  session:  null,   // { projectId, startTime }
+  session:  null,
   gasUrl:   '',
   selProj:  '',
   curMonth: new Date().getMonth(),
@@ -467,7 +464,6 @@ window.signInWithGoogle = async () => {
     await signInWithPopup(auth, provider);
   } catch(e) {
     console.error(e);
-    // ポップアップがブロックされた場合はリダイレクトで再試行
     if (e.code === 'auth/popup-blocked' || e.code === 'auth/popup-closed-by-user') {
       await signInWithRedirect(auth, provider);
     } else {
@@ -475,27 +471,22 @@ window.signInWithGoogle = async () => {
     }
   }
 };
+
 window.signOut = async () => {
   if (!confirm('サインアウトしますか？')) return;
   stopListeners();
   await fbSignOut(auth);
 };
 
-// リダイレクト後の結果を処理
 getRedirectResult(auth)
   .then(result => {
-    if (result?.user) {
-      console.log('redirect login success:', result.user.email);
-    }
+    if (result?.user) console.log('redirect login success:', result.user.email);
   })
   .catch(e => {
     console.warn('redirect result error:', e);
-    if (e.code === 'auth/unauthorized-domain') {
-      alert('ドメインが承認されていません');
-    }
+    if (e.code === 'auth/unauthorized-domain') alert('ドメインが承認されていません');
   });
 
-// 認証状態の監視
 onAuthStateChanged(auth, async user => {
   if (user) {
     currentUser = user;
@@ -509,21 +500,14 @@ onAuthStateChanged(auth, async user => {
 
 async function onUserSignedIn() {
   showScreen('loading');
-
-  // GAS URLをFirestoreのユーザードキュメントから取得
   try {
     const snap = await getDoc(userDoc());
-    if (snap.exists()) {
-      S.gasUrl = snap.data().gasUrl || '';
-    }
-    // なければlocalStorageからマイグレーション
+    if (snap.exists()) S.gasUrl = snap.data().gasUrl || '';
     if (!S.gasUrl) {
       S.gasUrl = localStorage.getItem('kintai_gas_url') || '';
       if (S.gasUrl) await setDoc(userDoc(), { gasUrl: S.gasUrl }, { merge: true });
     }
   } catch(e) { S.gasUrl = localStorage.getItem('kintai_gas_url') || ''; }
-
-  // リアルタイムリスナー開始
   startListeners();
   renderUserChip();
   updateGasBadge();
@@ -537,43 +521,29 @@ function stopListeners() {
   if (unsubSession)  { unsubSession();  unsubSession  = null; }
 }
 
-// ── Firestore リアルタイムリスナー ──────────────────────
+// ── Firestore listeners ──────────────────────────────────
 function startListeners() {
-  // Projects
   unsubProjects = onSnapshot(
     query(projectsCol(), orderBy('createdAt')),
     snap => {
       S.projects = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderProjects();
-      renderMonthly();
-      renderClockIOBtn();
+      renderProjects(); renderMonthly(); renderClockIOBtn();
     },
     err => console.error('projects listener:', err)
   );
-
-  // Records
   unsubRecords = onSnapshot(
     query(recordsCol(), orderBy('start', 'desc')),
     snap => {
       S.records = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderLog();
-      renderMonthly();
-      renderProjects(); // 月の合計時間更新
+      renderLog(); renderMonthly(); renderProjects();
     },
     err => console.error('records listener:', err)
   );
-
-  // Session（出勤中状態）
   unsubSession = onSnapshot(
     doc(db, 'users', currentUser.uid),
     snap => {
-      if (snap.exists() && snap.data().session) {
-        S.session = snap.data().session;
-      } else {
-        S.session = null;
-      }
-      renderClockIOBtn();
-      renderProjects();
+      S.session = (snap.exists() && snap.data().session) ? snap.data().session : null;
+      renderClockIOBtn(); renderProjects();
     },
     err => console.error('session listener:', err)
   );
@@ -603,45 +573,31 @@ function updateSessionStatus() {
 // ── Clock in / out ───────────────────────────────────────
 window.handleClockIO = async () => {
   if (editMode) return;
-
   if (!S.session) {
-    // 出勤
     if (!S.selProj) { alert('プロジェクトを選択してください'); return; }
-    const session = { projectId: S.selProj, startTime: Date.now() };
-    await setDoc(userDoc(), { session }, { merge: true });
+    await setDoc(userDoc(), { session: { projectId: S.selProj, startTime: Date.now() } }, { merge: true });
   } else {
-    // 退勤
     const dur = Date.now() - S.session.startTime;
     const memo = document.getElementById('memo-input').value.trim();
-
     const doSave = async () => {
       const id = 'r' + Date.now();
       const p = proj(S.session.projectId);
       const rec = {
-        projectId:   S.session.projectId,
-        projectName: p?.name || '不明',
-        start:       S.session.startTime,
-        end:         Date.now(),
-        duration:    dur,
-        memo,
-        syncStatus:  'pending',
-        createdAt:   Date.now(),
+        projectId: S.session.projectId, projectName: p?.name || '不明',
+        start: S.session.startTime, end: Date.now(), duration: dur,
+        memo, syncStatus: 'pending', createdAt: Date.now(),
       };
-      // Firestoreに記録を保存 & セッションを削除（同時）
       await Promise.all([
         setDoc(recordDoc(id), rec),
         setDoc(userDoc(), { session: null }, { merge: true }),
       ]);
       document.getElementById('memo-input').value = '';
-
-      // GASへ送信
       if (S.gasUrl) {
         gasSendRecord({ id, ...rec }).then(async ok => {
           if (ok) await setDoc(recordDoc(id), { syncStatus: 'synced' }, { merge: true });
         });
       }
     };
-
     if (dur < 30000) {
       if (confirm('30秒未満の記録です。保存しますか？')) await doSave();
       else await setDoc(userDoc(), { session: null }, { merge: true });
@@ -657,7 +613,6 @@ function renderClockIOBtn() {
   const lbl    = document.getElementById('btn-label');
   const status = document.getElementById('clockio-status');
   if (!btn) return;
-
   if (S.session) {
     btn.className = 'clockio-btn clocked';
     icon.textContent = '🔴'; lbl.textContent = '退勤';
@@ -666,11 +621,9 @@ function renderClockIOBtn() {
     btn.className = 'clockio-btn idle';
     icon.textContent = '🟢'; lbl.textContent = '出勤';
     const p = S.selProj ? proj(S.selProj) : null;
-    if (p) {
-      status.innerHTML = `<b>${p.name}</b> で出勤できます`;
-    } else {
-      status.innerHTML = `<span class="warn">プロジェクトを選択してください</span>`;
-    }
+    status.innerHTML = p
+      ? `<b>${p.name}</b> で出勤できます`
+      : `<span class="warn">プロジェクトを選択してください</span>`;
   }
 }
 
@@ -706,6 +659,18 @@ window.toggleEditMode = () => {
   btn.classList.toggle('on', editMode);
   renderProjects();
 };
+
+async function swapProjects(fromId, toId) {
+  const fromIdx = S.projects.findIndex(x => x.id === fromId);
+  const toIdx   = S.projects.findIndex(x => x.id === toId);
+  if (fromIdx < 0 || toIdx < 0) return;
+  const newProjects = [...S.projects];
+  const [moved] = newProjects.splice(fromIdx, 1);
+  newProjects.splice(toIdx, 0, moved);
+  for (let i = 0; i < newProjects.length; i++) {
+    await setDoc(projectDoc(newProjects[i].id), { createdAt: i * 1000 }, { merge: true });
+  }
+}
 
 function renderProjects() {
   const list = document.getElementById('project-list');
@@ -762,28 +727,7 @@ function renderProjects() {
     }
     list.appendChild(card);
   });
-window.syncFromSheet = async () => {
-  if (!S.gasUrl) { alert('GASを接続してください'); return; }
-  const btn = document.getElementById('sync-btn');
-  btn.textContent = '同期中...';
-  btn.disabled = true;
-  try {
-    const url = `${S.gasUrl}?action=get_records&year=${S.curYear}&month=${S.curMonth+1}&userName=${encodeURIComponent(gasUserName())}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if (!data || !data.records) { alert('データ取得失敗'); return; }
-    for (const r of data.records) {
-      await setDoc(recordDoc(r.id), r, { merge: true });
-    }
-    alert(`${data.records.length}件を同期しました`);
-  } catch(e) {
-    alert('エラー: ' + e.message);
-  } finally {
-    btn.textContent = '↓同期';
-    btn.disabled = false;
-  }
-};
-
+}
 
 // ── Records ──────────────────────────────────────────────
 function renderLog() {
@@ -873,7 +817,6 @@ window.exportCSV = () => {
 };
 
 // ── GAS ──────────────────────────────────────────────────
-// ログイン中ユーザーの表示名（GASのシート名に使う）
 function gasUserName() {
   return currentUser?.displayName || currentUser?.email?.split('@')[0] || 'unknown';
 }
@@ -885,14 +828,12 @@ async function gasPost(payload) {
     return await res.json();
   } catch(e) { return null; }
 }
+
 async function gasSendRecord(rec) {
-  // userName を必ず付けて送信 → GASがシート名「名前_年月」に使う
-  const res = await gasPost({
-    action: 'add_record',
-    record: { ...rec, userName: gasUserName() }
-  });
+  const res = await gasPost({ action: 'add_record', record: { ...rec, userName: gasUserName() } });
   return res?.ok === true;
 }
+
 window.resyncPending = async () => {
   const pending = S.records.filter(r=>r.syncStatus==='pending');
   for (const r of pending) {
@@ -900,6 +841,7 @@ window.resyncPending = async () => {
     if (ok) await setDoc(recordDoc(r.id), { syncStatus:'synced' }, { merge:true });
   }
 };
+
 window.pushAllToGas = async () => {
   const recs = monthRecs(); if (!recs.length) return;
   let c = 0;
@@ -922,7 +864,6 @@ window.saveGasUrl = async () => {
   }
   S.gasUrl = url;
   await setDoc(userDoc(), { gasUrl: url }, { merge: true });
-  // プロジェクト同期時もuserNameを付ける
   try { await fetch(url, { method:'POST', body:JSON.stringify({action:'sync_projects', projects:S.projects, userName:gasUserName()}), headers:{'Content-Type':'text/plain'} }); } catch(e){}
   updateGasBadge(); closeModal('gas-modal');
   alert('✅ GAS URLを保存しました。');
@@ -942,7 +883,7 @@ function renderUserChip() {
   const nm = document.getElementById('chip-name');
   if (!av || !nm) return;
   const name = currentUser.displayName || currentUser.email || 'ユーザー';
-  nm.textContent = name.split(' ')[0]; // 名前の最初の部分だけ
+  nm.textContent = name.split(' ')[0];
   if (currentUser.photoURL) {
     const img = document.createElement('img');
     img.src = currentUser.photoURL;
@@ -951,7 +892,6 @@ function renderUserChip() {
   } else {
     av.textContent = name[0].toUpperCase();
   }
-  // Account modal
   const info = document.getElementById('account-info');
   if (info) {
     info.innerHTML = `
@@ -983,7 +923,6 @@ window.switchTab = (name) => {
   document.getElementById('content').scrollTop = 0;
 };
 
-// ── Modal helpers ─────────────────────────────────────────
 window.openModal  = (id) => {
   if (id === 'gas-modal') document.getElementById('gas-url-input').value = S.gasUrl;
   document.getElementById(id).classList.add('open');
@@ -1020,8 +959,7 @@ window.installPWA = () => {
   }
 };
 
-// Service Worker
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+// ── シートからFirestoreへ同期 ─────────────────────────────
 window.syncFromSheet = async () => {
   if (!S.gasUrl) { alert('GASを接続してください'); return; }
   const btn = document.getElementById('sync-btn');
@@ -1042,11 +980,11 @@ window.syncFromSheet = async () => {
     btn.textContent = '↓同期';
     btn.disabled = false;
   }
-}
 };
 
-  
-</script>
+// Service Worker
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
 
+</script>
 </body>
 </html>
