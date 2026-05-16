@@ -57,7 +57,6 @@ function addRecord(record) {
   const sheetName = getSheetName(new Date(record.start));
   const sheet = getOrCreateSheet(ss, sheetName);
 
-  // ヘッダーがなければ追加
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(['記録ID', 'プロジェクトID', 'プロジェクト名', '日付', '開始時刻', '終了時刻', '時間(h)', 'メモ']);
     sheet.getRange(1, 1, 1, 8).setFontWeight('bold').setBackground('#E8F0FE');
@@ -85,9 +84,7 @@ function addRecord(record) {
     record.memo || ''
   ]);
 
-  // サマリーシートを更新
   updateSummary(ss);
-
   return jsonResponse({ ok: true, message: '記録しました' });
 }
 
@@ -118,7 +115,7 @@ function deleteRecord(recordId) {
 // ============================================================
 function getRecords(year, month) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const sheetName = `${year}年${String(month).padStart(2, '0')}月`;
+  const sheetName = year + '年' + String(month).padStart(2, '0') + '月';
   const sheet = ss.getSheetByName(sheetName);
 
   if (!sheet || sheet.getLastRow() <= 1) {
@@ -126,18 +123,36 @@ function getRecords(year, month) {
   }
 
   const data = sheet.getDataRange().getValues();
-  const records = data.slice(1).map(row => ({
-    id:          row[0],
-    projectId:   row[1],
-    projectName: row[2],
-    date:        row[3],
-    startTime:   row[4],
-    endTime:     row[5],
-    hours:       row[6],
-    memo:        row[7]
-  }));
+  const records = data.slice(1).filter(function(row) { return row[0]; }).map(function(row) {
+    var dateStr  = String(row[3]); // yyyy/MM/dd
+    var startStr = String(row[4]); // HH:mm
+    var endStr   = String(row[5]); // HH:mm
+    var hours    = parseFloat(row[6]) || 0;
 
-  return jsonResponse({ ok: true, records });
+    var startTs = 0, endTs = 0;
+    try {
+      var dateParts  = dateStr.split('/').map(Number);
+      var startParts = startStr.split(':').map(Number);
+      var endParts   = endStr.split(':').map(Number);
+      startTs = new Date(dateParts[0], dateParts[1]-1, dateParts[2], startParts[0], startParts[1], 0).getTime();
+      endTs   = new Date(dateParts[0], dateParts[1]-1, dateParts[2], endParts[0],   endParts[1],   0).getTime();
+      if (endTs <= startTs) endTs += 86400000; // 日またぎ対応
+    } catch(err) {}
+
+    return {
+      id:          String(row[0]),
+      projectId:   String(row[1]),
+      projectName: String(row[2]),
+      start:       startTs,
+      end:         endTs,
+      duration:    Math.round(hours * 3600000),
+      memo:        String(row[7] || ''),
+      syncStatus:  'synced',
+      sheetHours:  hours
+    };
+  });
+
+  return jsonResponse({ ok: true, records: records });
 }
 
 // ============================================================
@@ -209,7 +224,6 @@ function updateSummary(ss) {
     summary.getRange(2, 1, rows.length, 4).setValues(rows);
   }
 
-  // 列幅調整
   summary.setColumnWidth(1, 110);
   summary.setColumnWidth(2, 140);
   summary.setColumnWidth(3, 110);
@@ -220,7 +234,7 @@ function updateSummary(ss) {
 // ユーティリティ
 // ============================================================
 function getSheetName(date) {
-  return `${date.getFullYear()}年${String(date.getMonth() + 1).padStart(2, '0')}月`;
+  return date.getFullYear() + '年' + String(date.getMonth() + 1).padStart(2, '0') + '月';
 }
 
 function getOrCreateSheet(ss, name) {
@@ -236,26 +250,3 @@ function jsonResponse(obj) {
 function doOptions(e) {
   return ContentService.createTextOutput('').setMimeType(ContentService.MimeType.TEXT);
 }
-
-// ── シートからFirestoreへ同期 ────────────────────────
-window.syncFromSheet = async () => {
-  if (!S.gasUrl) { alert('GASを接続してください'); return; }
-  const btn = document.getElementById('sync-btn');
-  btn.textContent = '同期中...';
-  btn.disabled = true;
-  try {
-    const res = await gasPost({ action: 'get_records', userName: gasUserName() });
-    if (!res || !res.records) { alert('データ取得失敗'); return; }
-    let count = 0;
-    for (const r of res.records) {
-      await setDoc(recordDoc(r.id), r, { merge: true });
-      count++;
-    }
-    alert(`${count}件を同期しました`);
-  } catch(e) {
-    alert('エラー: ' + e.message);
-  } finally {
-    btn.textContent = '↓ 同期';
-    btn.disabled = false;
-  }
-};

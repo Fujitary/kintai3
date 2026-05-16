@@ -30,6 +30,7 @@
   --success: #1D9E75;
   --success-light: #D1FAE5;
   --warning: #F59E0B;
+  --warning-light: #FEF3C7;
   --radius: 14px;
   --sb: env(safe-area-inset-bottom, 0px);
   --st: env(safe-area-inset-top, 0px);
@@ -46,15 +47,14 @@
     --accent-text: #60A5FA;
     --danger-light: #7F1D1D;
     --success-light: #064E3B;
+    --warning-light: #78350F;
   }
 }
 
 html { height: 100%; overflow: hidden; }
 body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Noto Sans JP', sans-serif; overflow: hidden; padding-top: var(--st); }
-
 #screen-app { display: flex; flex-direction: column; height: 100%; overflow: hidden; max-width: 100vw; }
 
-/* ── Login screen ── */
 .login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 24px; padding: 32px; }
 .login-logo { font-size: 48px; }
 .login-title { font-size: 24px; font-weight: 700; letter-spacing: -0.03em; }
@@ -64,23 +64,19 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
 .google-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
 .login-note { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.8; }
 
-/* ── Loading ── */
 .loading-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 16px; }
 .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-text { font-size: 14px; color: var(--muted); }
 
-/* ── App shell ── */
 .shell { display: flex; flex-direction: column; height: 100%; max-width: 480px; width: 100%; margin: 0 auto; overflow: hidden; }
 
-/* ── Install banner ── */
 .install-banner { display: none; background: var(--accent); color: white; padding: 10px 16px; font-size: 13px; align-items: center; gap: 10px; flex-shrink: 0; width: 100%; }
 .install-banner.show { display: flex; }
 .install-banner span { flex: 1; }
 .install-banner button { background: white; color: var(--accent); border: none; border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 700; cursor: pointer; }
 .install-banner .cls { background: none; color: rgba(255,255,255,.7); font-size: 18px; padding: 4px; }
 
-/* ── Topbar ── */
 .topbar { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 12px 16px 10px; background: var(--bg); border-bottom: 0.5px solid var(--border); gap: 8px; }
 .topbar-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .topbar h1 { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; flex-shrink: 0; }
@@ -95,27 +91,20 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
 .gas-badge { font-size: 11px; padding: 4px 8px; border-radius: 20px; font-weight: 600; cursor: pointer; border: none; touch-action: manipulation; white-space: nowrap; }
 .gas-badge.connected { background: var(--success-light); color: #065F46; }
 .gas-badge.disconnected { background: var(--danger-light); color: #991B1B; }
-@media (prefers-color-scheme: dark) {
-  .gas-badge.connected { color: #6EE7B7; }
-  .gas-badge.disconnected { color: #FCA5A5; }
-}
+@media (prefers-color-scheme: dark) { .gas-badge.connected { color: #6EE7B7; } .gas-badge.disconnected { color: #FCA5A5; } }
 
-/* ── Content ── */
 .content { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding: 14px 16px; }
 
-/* ── Tabbar ── */
 .tabbar { flex-shrink: 0; display: flex; background: var(--surface); border-top: 0.5px solid var(--border); padding-bottom: var(--sb); width: 100%; }
 .tabbar-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 8px 0; border: none; background: none; cursor: pointer; color: var(--muted); font-family: 'Noto Sans JP', sans-serif; touch-action: manipulation; transition: color 0.15s; }
 .tabbar-btn.active { color: var(--accent); }
 .tabbar-icon { font-size: 21px; line-height: 1; }
 .tabbar-label { font-size: 10px; font-weight: 500; }
 
-/* ── Panels ── */
 .panel { display: none; }
 .panel.active { display: block; }
 .section-label { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 9px; }
 
-/* ── Projects ── */
 .projects { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 12px; }
 .project-card { padding: 13px 14px; border-radius: var(--radius); border: 1.5px solid var(--border); background: var(--surface); cursor: pointer; text-align: left; position: relative; overflow: hidden; font-family: 'Noto Sans JP', sans-serif; touch-action: manipulation; -webkit-user-select: none; transition: border-color 0.15s, background 0.15s; }
 .project-card:active { opacity: 0.75; }
@@ -144,14 +133,6 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
 .edit-toggle { padding: 10px 12px; font-size: 12px; font-weight: 700; border-radius: 10px; border: 0.5px solid var(--border); background: var(--surface); cursor: pointer; color: var(--muted); font-family: 'Noto Sans JP', sans-serif; touch-action: manipulation; white-space: nowrap; flex-shrink: 0; }
 .edit-toggle.on { background: var(--danger-light); color: var(--danger); border-color: var(--danger); }
 
-/* ── Sync indicator ── */
-.sync-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-left: 4px; vertical-align: middle; }
-.sync-dot.syncing { background: var(--warning); animation: blink 0.8s ease-in-out infinite; }
-.sync-dot.synced { background: var(--success); }
-.sync-dot.error { background: var(--danger); }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-/* ── Clock IO ── */
 .clockio-area { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 8px 0 14px; }
 .current-time { font-family: 'DM Mono', monospace; font-size: 38px; font-weight: 500; letter-spacing: 0.03em; }
 .clockio-btn { width: 130px; height: 130px; border-radius: 50%; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; font-family: 'Noto Sans JP', sans-serif; touch-action: manipulation; -webkit-user-select: none; transition: transform 0.15s; }
@@ -169,14 +150,15 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
 .memo-row input { width: 100%; font-size: 16px; font-family: 'Noto Sans JP', sans-serif; padding: 10px 12px; border: 0.5px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text); }
 .memo-row input:focus { outline: none; border-color: var(--accent); }
 
-/* ── Records ── */
 .records { display: flex; flex-direction: column; gap: 6px; }
 .record { background: var(--surface); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; border: 0.5px solid var(--border); }
+.record.modified { border-color: var(--warning); background: var(--warning-light); }
 .record .rdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 .record .rinfo { flex: 1; min-width: 0; }
 .record .rname { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .record .rmeta { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 3px; }
 .record .rmemo { font-size: 11px; color: var(--muted); margin-top: 2px; font-style: italic; }
+.record .rmodified { font-size: 10px; color: var(--warning); font-weight: 700; margin-top: 2px; }
 .record .rtime { font-size: 14px; font-family: 'DM Mono', monospace; font-weight: 500; flex-shrink: 0; }
 .record .rsync { font-size: 10px; padding: 2px 5px; border-radius: 4px; flex-shrink: 0; }
 .record .rsync.ok { background: var(--success-light); color: #065F46; }
@@ -185,7 +167,6 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
 .record .rdel { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 15px; padding: 4px 6px; border-radius: 6px; flex-shrink: 0; touch-action: manipulation; }
 .record .rdel:active { color: var(--danger); }
 
-/* ── Monthly ── */
 .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 14px; }
 .metric { background: var(--surface); border-radius: 12px; padding: 14px 16px; border: 0.5px solid var(--border); }
 .metric .mlabel { font-size: 11px; color: var(--muted); margin-bottom: 5px; font-weight: 500; }
@@ -201,11 +182,8 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
 .action-btn { width: 100%; padding: 14px; font-size: 15px; font-family: 'Noto Sans JP', sans-serif; font-weight: 500; border-radius: 12px; border: 0.5px solid var(--border); background: var(--surface); cursor: pointer; color: var(--text); margin-bottom: 9px; touch-action: manipulation; }
 .action-btn:active { opacity: 0.7; }
 .action-btn.primary { background: var(--accent); color: white; border-color: transparent; }
-.action-btn.danger { background: var(--danger-light); color: var(--danger); border-color: transparent; }
-
 .empty { text-align: center; padding: 2.5rem; font-size: 14px; color: var(--muted); }
 
-/* ── Modals ── */
 .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: flex-end; justify-content: center; }
 .modal-bg.open { display: flex; }
 .modal { background: var(--surface); border-radius: 20px 20px 0 0; padding: 20px 20px calc(16px + var(--sb)); width: 100%; max-height: 85vh; overflow-y: auto; }
@@ -219,7 +197,6 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
 .modal-btns .save-btn { background: var(--accent); color: white; border-color: transparent; }
 .modal-btns .cancel-btn { background: var(--surface2); color: var(--text); }
 
-/* Account modal */
 .account-info { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--surface2); border-radius: 12px; margin-bottom: 16px; }
 .account-photo { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
 .account-photo-initials { width: 44px; height: 44px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: white; flex-shrink: 0; }
@@ -229,17 +206,26 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
 
 .steps { background: var(--surface2); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; font-size: 12px; color: var(--muted); line-height: 2.1; }
 .steps b { color: var(--text); font-weight: 600; }
+
+/* 同期ログ */
+.sync-log { background: var(--surface2); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; font-size: 12px; max-height: 320px; overflow-y: auto; }
+.sync-summary { font-weight: 600; color: var(--text); margin-bottom: 10px; font-size: 13px; }
+.log-item { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; border-bottom: 0.5px solid var(--border); line-height: 1.5; }
+.log-item:last-child { border-bottom: none; }
+.log-icon { flex-shrink: 0; font-weight: 700; }
+.log-modified .log-icon { color: var(--warning); }
+.log-new .log-icon { color: var(--success); }
+.log-ok .log-icon { color: var(--muted); }
+.log-text { color: var(--text); }
 </style>
 </head>
 <body>
 
-<!-- Loading screen -->
 <div id="screen-loading" class="loading-screen">
   <div class="spinner"></div>
   <div class="loading-text">読み込み中...</div>
 </div>
 
-<!-- Login screen -->
 <div id="screen-login" class="login-screen" style="display:none;">
   <div class="login-logo">⏱</div>
   <div class="login-title">勤怠記録</div>
@@ -256,7 +242,6 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
   <div class="login-note">サインイン状態はブラウザに保存されます<br>次回から自動的にログインします</div>
 </div>
 
-<!-- App shell -->
 <div id="screen-app" style="display:none;">
   <div class="install-banner" id="install-banner">
     <span>ホーム画面に追加するとアプリとして使えます</span>
@@ -285,8 +270,6 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
     </div>
 
     <div class="content" id="content">
-
-      <!-- 打刻 -->
       <div class="panel active" id="panel-clock">
         <div class="section-label">プロジェクト</div>
         <div class="projects" id="project-list"></div>
@@ -306,7 +289,6 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
           </div>
           <button class="edit-toggle" id="edit-toggle" onclick="toggleEditMode()">編集</button>
         </div>
-
         <div class="section-label">打刻</div>
         <div class="clockio-area">
           <div class="current-time" id="current-time">--:--:--</div>
@@ -321,14 +303,12 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
         </div>
       </div>
 
-      <!-- 記録 -->
       <div class="panel" id="panel-log">
         <div class="records" id="record-list"></div>
         <div class="empty" id="log-empty" style="display:none;">この月の記録はありません</div>
         <button class="action-btn" id="resync-btn" onclick="resyncPending()" style="display:none;margin-top:10px;">🔄 未送信をGASへ再送信</button>
       </div>
 
-      <!-- 月次 -->
       <div class="panel" id="panel-monthly">
         <div class="summary-grid">
           <div class="metric"><div class="mlabel">合計時間</div><div class="mvalue" id="total-hours">0h</div></div>
@@ -342,7 +322,6 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
         <button class="action-btn" onclick="exportCSV()">📥 CSVエクスポート</button>
         <button class="action-btn primary" id="gas-push-btn" onclick="pushAllToGas()" style="display:none;">☁️ スプレッドシートへ送信</button>
       </div>
-
     </div>
 
     <nav class="tabbar">
@@ -356,6 +335,18 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
         <span class="tabbar-icon">📊</span><span class="tabbar-label">月次</span>
       </button>
     </nav>
+  </div>
+</div>
+
+<!-- 同期ログ modal -->
+<div class="modal-bg" id="sync-log-modal" onclick="bgClick(event,'sync-log-modal')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>同期ログ</h2>
+    <div class="sync-log" id="sync-log-content"></div>
+    <div class="modal-btns">
+      <button class="cancel-btn" onclick="closeModal('sync-log-modal')">閉じる</button>
+    </div>
   </div>
 </div>
 
@@ -394,7 +385,6 @@ body { height: 100%; background: var(--bg); color: var(--text); font-family: 'No
   </div>
 </div>
 
-<!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js';
 import {
@@ -402,11 +392,10 @@ import {
   getRedirectResult, onAuthStateChanged, signOut as fbSignOut
 } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js';
 import {
-  getFirestore, doc, collection, getDocs, getDoc,
-  setDoc, deleteDoc, onSnapshot, serverTimestamp, query, orderBy
+  getFirestore, doc, collection, getDoc,
+  setDoc, deleteDoc, onSnapshot, query, orderBy
 } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js';
 
-// ── Firebase init ────────────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyDtGGTJqlRKWGFaVBGpdM0CloJQ8rUzdGc",
   authDomain: "kintaikanri-fujita.firebaseapp.com",
@@ -419,24 +408,14 @@ const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
-// ── State ────────────────────────────────────────────────
 let currentUser = null;
 let S = {
-  projects: [],
-  records:  [],
-  session:  null,
-  gasUrl:   '',
-  selProj:  '',
-  curMonth: new Date().getMonth(),
-  curYear:  new Date().getFullYear(),
+  projects: [], records: [], session: null, gasUrl: '',
+  selProj: '', curMonth: new Date().getMonth(), curYear: new Date().getFullYear(),
 };
-let unsubProjects = null;
-let unsubRecords  = null;
-let unsubSession  = null;
-let editMode = false;
-let tickTimer = null;
+let unsubProjects=null, unsubRecords=null, unsubSession=null;
+let editMode=false, tickTimer=null;
 
-// ── Helpers ──────────────────────────────────────────────
 const pad = n => String(n).padStart(2,'0');
 const proj = id => S.projects.find(p => p.id === id);
 const fmtTime = ts => { const d=new Date(ts); return pad(d.getHours())+':'+pad(d.getMinutes()); };
@@ -450,20 +429,17 @@ function monthRecs() {
   });
 }
 
-// Firestore paths
 const userDoc     = ()  => doc(db, 'users', currentUser.uid);
 const projectsCol = ()  => collection(db, 'users', currentUser.uid, 'projects');
 const recordsCol  = ()  => collection(db, 'users', currentUser.uid, 'records');
 const projectDoc  = id  => doc(db, 'users', currentUser.uid, 'projects', id);
 const recordDoc   = id  => doc(db, 'users', currentUser.uid, 'records', id);
 
-// ── Auth ─────────────────────────────────────────────────
 window.signInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
   try {
     await signInWithPopup(auth, provider);
   } catch(e) {
-    console.error(e);
     if (e.code === 'auth/popup-blocked' || e.code === 'auth/popup-closed-by-user') {
       await signInWithRedirect(auth, provider);
     } else {
@@ -478,24 +454,11 @@ window.signOut = async () => {
   await fbSignOut(auth);
 };
 
-getRedirectResult(auth)
-  .then(result => {
-    if (result?.user) console.log('redirect login success:', result.user.email);
-  })
-  .catch(e => {
-    console.warn('redirect result error:', e);
-    if (e.code === 'auth/unauthorized-domain') alert('ドメインが承認されていません');
-  });
+getRedirectResult(auth).then(r => { if(r?.user) console.log('redirect ok'); }).catch(e => console.warn(e));
 
 onAuthStateChanged(auth, async user => {
-  if (user) {
-    currentUser = user;
-    await onUserSignedIn();
-  } else {
-    currentUser = null;
-    stopListeners();
-    showScreen('login');
-  }
+  if (user) { currentUser = user; await onUserSignedIn(); }
+  else { currentUser = null; stopListeners(); showScreen('login'); }
 });
 
 async function onUserSignedIn() {
@@ -508,48 +471,30 @@ async function onUserSignedIn() {
       if (S.gasUrl) await setDoc(userDoc(), { gasUrl: S.gasUrl }, { merge: true });
     }
   } catch(e) { S.gasUrl = localStorage.getItem('kintai_gas_url') || ''; }
-  startListeners();
-  renderUserChip();
-  updateGasBadge();
-  startTick();
-  showScreen('app');
+  startListeners(); renderUserChip(); updateGasBadge(); startTick(); showScreen('app');
 }
 
 function stopListeners() {
-  if (unsubProjects) { unsubProjects(); unsubProjects = null; }
-  if (unsubRecords)  { unsubRecords();  unsubRecords  = null; }
-  if (unsubSession)  { unsubSession();  unsubSession  = null; }
+  if (unsubProjects) { unsubProjects(); unsubProjects=null; }
+  if (unsubRecords)  { unsubRecords();  unsubRecords=null; }
+  if (unsubSession)  { unsubSession();  unsubSession=null; }
 }
 
-// ── Firestore listeners ──────────────────────────────────
 function startListeners() {
-  unsubProjects = onSnapshot(
-    query(projectsCol(), orderBy('createdAt')),
-    snap => {
-      S.projects = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderProjects(); renderMonthly(); renderClockIOBtn();
-    },
-    err => console.error('projects listener:', err)
-  );
-  unsubRecords = onSnapshot(
-    query(recordsCol(), orderBy('start', 'desc')),
-    snap => {
-      S.records = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderLog(); renderMonthly(); renderProjects();
-    },
-    err => console.error('records listener:', err)
-  );
-  unsubSession = onSnapshot(
-    doc(db, 'users', currentUser.uid),
-    snap => {
-      S.session = (snap.exists() && snap.data().session) ? snap.data().session : null;
-      renderClockIOBtn(); renderProjects();
-    },
-    err => console.error('session listener:', err)
-  );
+  unsubProjects = onSnapshot(query(projectsCol(), orderBy('createdAt')), snap => {
+    S.projects = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderProjects(); renderMonthly(); renderClockIOBtn();
+  }, err => console.error(err));
+  unsubRecords = onSnapshot(query(recordsCol(), orderBy('start', 'desc')), snap => {
+    S.records = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderLog(); renderMonthly(); renderProjects();
+  }, err => console.error(err));
+  unsubSession = onSnapshot(doc(db, 'users', currentUser.uid), snap => {
+    S.session = (snap.exists() && snap.data().session) ? snap.data().session : null;
+    renderClockIOBtn(); renderProjects();
+  }, err => console.error(err));
 }
 
-// ── Clock tick ───────────────────────────────────────────
 function startTick() {
   clearInterval(tickTimer);
   tickTimer = setInterval(tick, 1000);
@@ -570,7 +515,6 @@ function updateSessionStatus() {
   el.innerHTML = `<span class="elapsed">${pad(h)}:${pad(m)}:${pad(s)}</span> 経過<br>${p?.name||''}`;
 }
 
-// ── Clock in / out ───────────────────────────────────────
 window.handleClockIO = async () => {
   if (editMode) return;
   if (!S.session) {
@@ -583,173 +527,139 @@ window.handleClockIO = async () => {
       const id = 'r' + Date.now();
       const p = proj(S.session.projectId);
       const rec = {
-        projectId: S.session.projectId, projectName: p?.name || '不明',
+        projectId: S.session.projectId, projectName: p?.name||'不明',
         start: S.session.startTime, end: Date.now(), duration: dur,
         memo, syncStatus: 'pending', createdAt: Date.now(),
       };
-      await Promise.all([
-        setDoc(recordDoc(id), rec),
-        setDoc(userDoc(), { session: null }, { merge: true }),
-      ]);
+      await Promise.all([setDoc(recordDoc(id), rec), setDoc(userDoc(), { session: null }, { merge: true })]);
       document.getElementById('memo-input').value = '';
-      if (S.gasUrl) {
-        gasSendRecord({ id, ...rec }).then(async ok => {
-          if (ok) await setDoc(recordDoc(id), { syncStatus: 'synced' }, { merge: true });
-        });
-      }
+      if (S.gasUrl) gasSendRecord({ id, ...rec }).then(async ok => { if(ok) await setDoc(recordDoc(id), { syncStatus:'synced' }, { merge:true }); });
     };
     if (dur < 30000) {
       if (confirm('30秒未満の記録です。保存しますか？')) await doSave();
       else await setDoc(userDoc(), { session: null }, { merge: true });
-    } else {
-      await doSave();
-    }
+    } else { await doSave(); }
   }
 };
 
 function renderClockIOBtn() {
-  const btn    = document.getElementById('clockio-btn');
-  const icon   = document.getElementById('btn-icon');
-  const lbl    = document.getElementById('btn-label');
-  const status = document.getElementById('clockio-status');
+  const btn=document.getElementById('clockio-btn'), icon=document.getElementById('btn-icon');
+  const lbl=document.getElementById('btn-label'), status=document.getElementById('clockio-status');
   if (!btn) return;
   if (S.session) {
-    btn.className = 'clockio-btn clocked';
-    icon.textContent = '🔴'; lbl.textContent = '退勤';
+    btn.className='clockio-btn clocked'; icon.textContent='🔴'; lbl.textContent='退勤';
     updateSessionStatus();
   } else {
-    btn.className = 'clockio-btn idle';
-    icon.textContent = '🟢'; lbl.textContent = '出勤';
+    btn.className='clockio-btn idle'; icon.textContent='🟢'; lbl.textContent='出勤';
     const p = S.selProj ? proj(S.selProj) : null;
-    status.innerHTML = p
-      ? `<b>${p.name}</b> で出勤できます`
-      : `<span class="warn">プロジェクトを選択してください</span>`;
+    status.innerHTML = p ? `<b>${p.name}</b> で出勤できます` : `<span class="warn">プロジェクトを選択してください</span>`;
   }
 }
 
-// ── Projects ─────────────────────────────────────────────
 window.addProject = async () => {
-  const name  = document.getElementById('new-project-name').value.trim();
-  const color = document.getElementById('new-color').value;
+  const name=document.getElementById('new-project-name').value.trim();
+  const color=document.getElementById('new-color').value;
   if (!name) return;
-  const id = 'p' + Date.now();
+  const id='p'+Date.now();
   await setDoc(projectDoc(id), { name, color, createdAt: Date.now() });
-  document.getElementById('new-project-name').value = '';
-  if (S.gasUrl) gasPost({ action: 'sync_projects', projects: [...S.projects, { id, name, color }] });
+  document.getElementById('new-project-name').value='';
+  if (S.gasUrl) gasPost({ action:'sync_projects', projects:[...S.projects,{id,name,color}] });
 };
 
 window.deleteProject = async (id) => {
-  if (S.session?.projectId === id) { alert('出勤中のプロジェクトは削除できません'); return; }
-  const p = proj(id);
+  if (S.session?.projectId===id) { alert('出勤中のプロジェクトは削除できません'); return; }
+  const p=proj(id);
   if (!confirm(`「${p?.name}」を削除しますか？\n（過去の記録は残ります）`)) return;
   await deleteDoc(projectDoc(id));
-  if (S.selProj === id) { S.selProj = ''; renderClockIOBtn(); }
+  if (S.selProj===id) { S.selProj=''; renderClockIOBtn(); }
 };
 
 window.selectProject = (id) => {
-  if (editMode || S.session) return;
-  S.selProj = S.selProj === id ? '' : id;
+  if (editMode||S.session) return;
+  S.selProj = S.selProj===id ? '' : id;
   renderProjects(); renderClockIOBtn();
 };
 
 window.toggleEditMode = () => {
   editMode = !editMode;
-  const btn = document.getElementById('edit-toggle');
+  const btn=document.getElementById('edit-toggle');
   btn.textContent = editMode ? '完了' : '編集';
   btn.classList.toggle('on', editMode);
   renderProjects();
 };
 
 async function swapProjects(fromId, toId) {
-  const fromIdx = S.projects.findIndex(x => x.id === fromId);
-  const toIdx   = S.projects.findIndex(x => x.id === toId);
-  if (fromIdx < 0 || toIdx < 0) return;
-  const newProjects = [...S.projects];
-  const [moved] = newProjects.splice(fromIdx, 1);
-  newProjects.splice(toIdx, 0, moved);
-  for (let i = 0; i < newProjects.length; i++) {
-    await setDoc(projectDoc(newProjects[i].id), { createdAt: i * 1000 }, { merge: true });
-  }
+  const fi=S.projects.findIndex(x=>x.id===fromId), ti=S.projects.findIndex(x=>x.id===toId);
+  if (fi<0||ti<0) return;
+  const np=[...S.projects]; const [mv]=np.splice(fi,1); np.splice(ti,0,mv);
+  for (let i=0;i<np.length;i++) await setDoc(projectDoc(np[i].id), { createdAt: i*1000 }, { merge:true });
 }
 
 function renderProjects() {
-  const list = document.getElementById('project-list');
+  const list=document.getElementById('project-list');
   if (!list) return;
-  list.innerHTML = '';
+  list.innerHTML='';
   list.classList.toggle('edit-mode', editMode);
   S.projects.forEach(p => {
-    const ms = monthRecs().filter(r=>r.projectId===p.id).reduce((a,r)=>a+r.duration,0);
-    const isSel    = S.selProj === p.id && !editMode;
-    const isActive = S.session?.projectId === p.id;
-    const card = document.createElement('div');
-    card.className = 'project-card'+(isSel?' selected':'')+(isActive?' has-active':'');
-    card.draggable = editMode;
-    card.dataset.id = p.id;
-    card.innerHTML = `
-      ${editMode ? '<span class="drag-handle">⠿</span>' : ''}
+    const ms=monthRecs().filter(r=>r.projectId===p.id).reduce((a,r)=>a+r.duration,0);
+    const isSel=S.selProj===p.id&&!editMode, isActive=S.session?.projectId===p.id;
+    const card=document.createElement('div');
+    card.className='project-card'+(isSel?' selected':'')+(isActive?' has-active':'');
+    card.draggable=editMode; card.dataset.id=p.id;
+    card.innerHTML=`
+      ${editMode?'<span class="drag-handle">⠿</span>':''}
       <span class="dot" style="background:${p.color}"></span>
       <span class="pname">${p.name}</span>
       <span class="ptime">${fmtH(ms)}</span>
-      ${isActive&&!editMode ? `<span class="active-badge">出勤中</span>` : ''}
+      ${isActive&&!editMode?`<span class="active-badge">出勤中</span>`:''}
       <button class="del-btn" onclick="event.stopPropagation();deleteProject('${p.id}')">✕</button>
     `;
-    card.onclick = () => selectProject(p.id);
+    card.onclick=()=>selectProject(p.id);
     if (editMode) {
-      card.addEventListener('dragstart', e => {
-        e.dataTransfer.setData('text/plain', p.id);
-        card.style.opacity = '0.5';
-      });
-      card.addEventListener('dragend', () => { card.style.opacity = ''; });
-      card.addEventListener('dragover', e => { e.preventDefault(); card.style.background = 'var(--accent-light)'; });
-      card.addEventListener('dragleave', () => { card.style.background = ''; });
+      card.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain',p.id); card.style.opacity='0.5'; });
+      card.addEventListener('dragend', ()=>{ card.style.opacity=''; });
+      card.addEventListener('dragover', e=>{ e.preventDefault(); card.style.background='var(--accent-light)'; });
+      card.addEventListener('dragleave', ()=>{ card.style.background=''; });
       card.addEventListener('drop', async e => {
-        e.preventDefault();
-        card.style.background = '';
-        const fromId = e.dataTransfer.getData('text/plain');
-        if (fromId === p.id) return;
-        await swapProjects(fromId, p.id);
+        e.preventDefault(); card.style.background='';
+        const fromId=e.dataTransfer.getData('text/plain');
+        if (fromId!==p.id) await swapProjects(fromId,p.id);
       });
-      let touchStartId = null;
-      card.addEventListener('touchstart', e => {
-        touchStartId = p.id;
-        card.style.opacity = '0.5';
-      }, { passive: true });
+      let tsi=null;
+      card.addEventListener('touchstart', e=>{ tsi=p.id; card.style.opacity='0.5'; }, { passive:true });
       card.addEventListener('touchend', async e => {
-        card.style.opacity = '';
-        if (!touchStartId || touchStartId === p.id) { touchStartId = null; return; }
-        const touch = e.changedTouches[0];
-        const target = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.project-card');
-        if (target && target.dataset.id && target.dataset.id !== touchStartId) {
-          await swapProjects(touchStartId, target.dataset.id);
-        }
-        touchStartId = null;
+        card.style.opacity='';
+        if (!tsi||tsi===p.id) { tsi=null; return; }
+        const t=e.changedTouches[0];
+        const tgt=document.elementFromPoint(t.clientX,t.clientY)?.closest('.project-card');
+        if (tgt&&tgt.dataset.id&&tgt.dataset.id!==tsi) await swapProjects(tsi,tgt.dataset.id);
+        tsi=null;
       });
     }
     list.appendChild(card);
   });
 }
 
-// ── Records ──────────────────────────────────────────────
 function renderLog() {
-  const recs   = monthRecs();
-  const list   = document.getElementById('record-list');
-  const empty  = document.getElementById('log-empty');
-  const resync = document.getElementById('resync-btn');
+  const recs=monthRecs(), list=document.getElementById('record-list');
+  const empty=document.getElementById('log-empty'), resync=document.getElementById('resync-btn');
   if (!list) return;
-  list.innerHTML = '';
-  if (resync) resync.style.display = (S.gasUrl && recs.some(r=>r.syncStatus==='pending')) ? '' : 'none';
-  if (!recs.length) { empty.style.display = ''; return; }
-  empty.style.display = 'none';
+  list.innerHTML='';
+  if (resync) resync.style.display=(S.gasUrl&&recs.some(r=>r.syncStatus==='pending'))?'':'none';
+  if (!recs.length) { empty.style.display=''; return; }
+  empty.style.display='none';
   recs.forEach(r => {
-    const p    = proj(r.projectId);
-    const sync = S.gasUrl ? `<span class="rsync ${r.syncStatus==='synced'?'ok':'ng'}">${r.syncStatus==='synced'?'✓':'未'}</span>` : '';
-    const row  = document.createElement('div'); row.className = 'record';
-    row.innerHTML = `
+    const p=proj(r.projectId);
+    const sync=S.gasUrl?`<span class="rsync ${r.syncStatus==='synced'?'ok':'ng'}">${r.syncStatus==='synced'?'✓':'未'}</span>`:'';
+    const row=document.createElement('div');
+    row.className='record'+(r.sheetModified?' modified':'');
+    row.innerHTML=`
       <span class="rdot" style="background:${p?.color||'#ccc'}"></span>
       <span class="rinfo">
         <span class="rname">${r.projectName||p?.name||'不明'}</span>
         <span class="rmeta">${fmtDate(r.start)} ${fmtTime(r.start)}–${fmtTime(r.end)}</span>
-        ${r.memo ? `<span class="rmemo">${r.memo}</span>` : ''}
+        ${r.sheetModified?`<span class="rmodified">✎ スプシで修正あり</span>`:''}
+        ${r.memo?`<span class="rmemo">${r.memo}</span>`:''}
       </span>
       ${sync}
       <span class="rtime">${fmtH(r.duration)}</span>
@@ -760,36 +670,31 @@ function renderLog() {
 }
 
 window.deleteRecord = async (id) => {
-  const r = S.records.find(x=>x.id===id);
-  if (r?.syncStatus==='synced' && S.gasUrl) gasPost({ action:'delete_record', recordId: id, userName: gasUserName() });
+  const r=S.records.find(x=>x.id===id);
+  if (r?.syncStatus==='synced'&&S.gasUrl) gasPost({ action:'delete_record', recordId:id, userName:gasUserName() });
   await deleteDoc(recordDoc(id));
 };
 
-// ── Monthly ──────────────────────────────────────────────
 function renderMonthly() {
-  const recs    = monthRecs();
-  const totalMs = recs.reduce((a,r)=>a+r.duration, 0);
-  const days    = new Set(recs.map(r=>new Date(r.start).toDateString())).size;
-  const th = document.getElementById('total-hours');
-  const wd = document.getElementById('work-days');
-  const pb = document.getElementById('gas-push-btn');
-  if (th) th.textContent = (totalMs/3600000).toFixed(1)+'h';
-  if (wd) wd.textContent = days+'日';
-  if (pb) pb.style.display = S.gasUrl ? '' : 'none';
-  const chart      = document.getElementById('bar-chart');
-  const chartEmpty = document.getElementById('chart-empty');
+  const recs=monthRecs(), totalMs=recs.reduce((a,r)=>a+r.duration,0);
+  const days=new Set(recs.map(r=>new Date(r.start).toDateString())).size;
+  const th=document.getElementById('total-hours'), wd=document.getElementById('work-days'), pb=document.getElementById('gas-push-btn');
+  if (th) th.textContent=(totalMs/3600000).toFixed(1)+'h';
+  if (wd) wd.textContent=days+'日';
+  if (pb) pb.style.display=S.gasUrl?'':'none';
+  const chart=document.getElementById('bar-chart'), chartEmpty=document.getElementById('chart-empty');
   if (!chart) return;
-  chart.innerHTML = '';
-  const byP = {};
-  recs.forEach(r => { byP[r.projectId] = (byP[r.projectId]||0) + r.duration; });
-  const sorted = Object.entries(byP).sort((a,b)=>b[1]-a[1]);
+  chart.innerHTML='';
+  const byP={};
+  recs.forEach(r=>{ byP[r.projectId]=(byP[r.projectId]||0)+r.duration; });
+  const sorted=Object.entries(byP).sort((a,b)=>b[1]-a[1]);
   if (!sorted.length) { chartEmpty.style.display=''; return; }
-  chartEmpty.style.display = 'none';
-  const maxMs = sorted[0][1];
+  chartEmpty.style.display='none';
+  const maxMs=sorted[0][1];
   sorted.forEach(([pid,ms]) => {
-    const p = proj(pid);
-    const row = document.createElement('div'); row.className = 'bar-row';
-    row.innerHTML = `
+    const p=proj(pid);
+    const row=document.createElement('div'); row.className='bar-row';
+    row.innerHTML=`
       <span class="bar-label">${p?.name||'不明'}</span>
       <div class="bar-track"><div class="bar-fill" style="width:${((ms/maxMs)*100).toFixed(1)}%;background:${p?.color||'#ccc'}"></div></div>
       <span class="bar-val">${(ms/3600000).toFixed(1)}h</span>
@@ -799,192 +704,171 @@ function renderMonthly() {
 }
 
 window.exportCSV = () => {
-  const recs = monthRecs();
-  const rows = [['記録ID','日付','プロジェクト','出勤','退勤','時間(h)','メモ']];
+  const recs=monthRecs();
+  const rows=[['記録ID','日付','プロジェクト','出勤','退勤','時間(h)','メモ']];
   recs.forEach(r => {
-    const p = proj(r.projectId);
-    rows.push([r.id, new Date(r.start).toLocaleDateString('ja-JP'),
-      r.projectName||p?.name||'不明',
+    const p=proj(r.projectId);
+    rows.push([r.id,new Date(r.start).toLocaleDateString('ja-JP'),r.projectName||p?.name||'不明',
       new Date(r.start).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'}),
       new Date(r.end).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'}),
-      (r.duration/3600000).toFixed(2), r.memo||'']);
+      (r.duration/3600000).toFixed(2),r.memo||'']);
   });
-  const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
-  a.download = `勤怠_${S.curYear}_${pad(S.curMonth+1)}.csv`;
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`勤怠_${S.curYear}_${pad(S.curMonth+1)}.csv`;
   a.click();
 };
 
-// ── GAS ──────────────────────────────────────────────────
-function gasUserName() {
-  return currentUser?.displayName || currentUser?.email?.split('@')[0] || 'unknown';
-}
+function gasUserName() { return currentUser?.displayName||currentUser?.email?.split('@')[0]||'unknown'; }
 
 async function gasPost(payload) {
   if (!S.gasUrl) return null;
   try {
-    const res = await fetch(S.gasUrl, { method:'POST', body:JSON.stringify(payload), headers:{'Content-Type':'text/plain'} });
+    const res=await fetch(S.gasUrl,{method:'POST',body:JSON.stringify(payload),headers:{'Content-Type':'text/plain'}});
     return await res.json();
   } catch(e) { return null; }
 }
 
 async function gasSendRecord(rec) {
-  const res = await gasPost({ action: 'add_record', record: { ...rec, userName: gasUserName() } });
-  return res?.ok === true;
+  const res=await gasPost({ action:'add_record', record:{...rec,userName:gasUserName()} });
+  return res?.ok===true;
 }
 
 window.resyncPending = async () => {
-  const pending = S.records.filter(r=>r.syncStatus==='pending');
-  for (const r of pending) {
-    const ok = await gasSendRecord(r);
-    if (ok) await setDoc(recordDoc(r.id), { syncStatus:'synced' }, { merge:true });
+  for (const r of S.records.filter(r=>r.syncStatus==='pending')) {
+    const ok=await gasSendRecord(r);
+    if (ok) await setDoc(recordDoc(r.id),{syncStatus:'synced'},{merge:true});
   }
 };
 
 window.pushAllToGas = async () => {
-  const recs = monthRecs(); if (!recs.length) return;
-  let c = 0;
+  const recs=monthRecs(); if (!recs.length) return;
+  let c=0;
   for (const r of recs) {
-    const ok = await gasSendRecord(r);
-    if (ok) { await setDoc(recordDoc(r.id), { syncStatus:'synced' }, { merge:true }); c++; }
+    const ok=await gasSendRecord(r);
+    if (ok) { await setDoc(recordDoc(r.id),{syncStatus:'synced'},{merge:true}); c++; }
   }
   alert(`${c}件を送信しました`);
 };
 
 window.saveGasUrl = async () => {
-  const url = document.getElementById('gas-url-input').value.trim();
+  const url=document.getElementById('gas-url-input').value.trim();
   if (!url) {
-    S.gasUrl = '';
-    await setDoc(userDoc(), { gasUrl: '' }, { merge: true });
+    S.gasUrl=''; await setDoc(userDoc(),{gasUrl:''},{merge:true});
     updateGasBadge(); closeModal('gas-modal'); return;
   }
-  if (!(url.startsWith('https://script.google.com/macros/s/') && url.endsWith('/exec'))) {
-    alert('URLの形式が正しくありません。'); return;
-  }
-  S.gasUrl = url;
-  await setDoc(userDoc(), { gasUrl: url }, { merge: true });
-  try { await fetch(url, { method:'POST', body:JSON.stringify({action:'sync_projects', projects:S.projects, userName:gasUserName()}), headers:{'Content-Type':'text/plain'} }); } catch(e){}
+  if (!(url.startsWith('https://script.google.com/macros/s/')&&url.endsWith('/exec'))) { alert('URLの形式が正しくありません。'); return; }
+  S.gasUrl=url; await setDoc(userDoc(),{gasUrl:url},{merge:true});
+  try { await fetch(url,{method:'POST',body:JSON.stringify({action:'sync_projects',projects:S.projects,userName:gasUserName()}),headers:{'Content-Type':'text/plain'}}); } catch(e){}
   updateGasBadge(); closeModal('gas-modal');
   alert('✅ GAS URLを保存しました。');
 };
 
 function updateGasBadge() {
-  const b = document.getElementById('gas-badge');
-  if (!b) return;
-  b.className = 'gas-badge ' + (S.gasUrl ? 'connected' : 'disconnected');
-  b.textContent = S.gasUrl ? 'GAS接続済' : 'GAS';
+  const b=document.getElementById('gas-badge'); if (!b) return;
+  b.className='gas-badge '+(S.gasUrl?'connected':'disconnected');
+  b.textContent=S.gasUrl?'GAS接続済':'GAS';
 }
-
-// ── User chip ─────────────────────────────────────────────
-function renderUserChip() {
-  if (!currentUser) return;
-  const av = document.getElementById('chip-avatar');
-  const nm = document.getElementById('chip-name');
-  if (!av || !nm) return;
-  const name = currentUser.displayName || currentUser.email || 'ユーザー';
-  nm.textContent = name.split(' ')[0];
-  if (currentUser.photoURL) {
-    const img = document.createElement('img');
-    img.src = currentUser.photoURL;
-    img.className = 'user-avatar';
-    av.replaceWith(img);
-  } else {
-    av.textContent = name[0].toUpperCase();
-  }
-  const info = document.getElementById('account-info');
-  if (info) {
-    info.innerHTML = `
-      ${currentUser.photoURL
-        ? `<img src="${currentUser.photoURL}" class="account-photo"/>`
-        : `<div class="account-photo-initials">${name[0].toUpperCase()}</div>`}
-      <div class="account-detail">
-        <div class="account-name">${currentUser.displayName||''}</div>
-        <div class="account-email">${currentUser.email||''}</div>
-      </div>
-    `;
-  }
-}
-
-// ── Navigation ────────────────────────────────────────────
-window.changeMonth = (d) => {
-  S.curMonth += d;
-  if (S.curMonth > 11) { S.curMonth = 0; S.curYear++; }
-  if (S.curMonth < 0)  { S.curMonth = 11; S.curYear--; }
-  document.getElementById('month-label').textContent = `${S.curYear}.${pad(S.curMonth+1)}`;
-  renderLog(); renderMonthly(); renderProjects();
-};
-
-window.switchTab = (name) => {
-  ['clock','log','monthly'].forEach(t => {
-    document.getElementById('panel-'+t).classList.toggle('active', t===name);
-    document.getElementById('tab-'+t).classList.toggle('active', t===name);
-  });
-  document.getElementById('content').scrollTop = 0;
-};
-
-window.openModal  = (id) => {
-  if (id === 'gas-modal') document.getElementById('gas-url-input').value = S.gasUrl;
-  document.getElementById(id).classList.add('open');
-};
-window.closeModal = (id) => document.getElementById(id).classList.remove('open');
-window.bgClick    = (e, id) => { if (e.target===e.currentTarget) closeModal(id); };
-
-// ── Screen control ────────────────────────────────────────
-function showScreen(name) {
-  document.getElementById('screen-loading').style.display = name==='loading' ? 'flex' : 'none';
-  document.getElementById('screen-login').style.display   = name==='login'   ? 'flex' : 'none';
-  document.getElementById('screen-app').style.display     = name==='app'     ? 'flex' : 'none';
-  if (name==='app') {
-    document.getElementById('month-label').textContent = `${S.curYear}.${pad(S.curMonth+1)}`;
-  }
-}
-
-// ── PWA install ───────────────────────────────────────────
-let deferredPrompt = null;
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault(); deferredPrompt = e;
-  if (!matchMedia('(display-mode: standalone)').matches)
-    document.getElementById('install-banner').classList.add('show');
-});
-window.installPWA = () => {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(() => {
-      deferredPrompt = null;
-      document.getElementById('install-banner').classList.remove('show');
-    });
-  } else {
-    alert('📱 iOSでホーム画面に追加：\nSafariの共有ボタン（↑）→「ホーム画面に追加」');
-  }
-};
 
 // ── シートからFirestoreへ同期 ─────────────────────────────
 window.syncFromSheet = async () => {
   if (!S.gasUrl) { alert('GASを接続してください'); return; }
-  const btn = document.getElementById('sync-btn');
-  btn.textContent = '同期中...';
-  btn.disabled = true;
+  const btn=document.getElementById('sync-btn');
+  btn.textContent='同期中...'; btn.disabled=true;
+  const logs=[]; let modCnt=0, newCnt=0, okCnt=0;
   try {
-    const url = `${S.gasUrl}?action=get_records&year=${S.curYear}&month=${S.curMonth+1}&userName=${encodeURIComponent(gasUserName())}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if (!data || !data.records) { alert('データ取得失敗'); return; }
+    const url=`${S.gasUrl}?action=get_records&year=${S.curYear}&month=${S.curMonth+1}&userName=${encodeURIComponent(gasUserName())}`;
+    const res=await fetch(url);
+    const data=await res.json();
+    if (!data||!data.records) { alert('データ取得失敗'); return; }
     for (const r of data.records) {
-      await setDoc(recordDoc(r.id), r, { merge: true });
+      const existing=S.records.find(x=>x.id===r.id);
+      const exH=existing?existing.duration/3600000:null;
+      const shH=r.sheetHours||0;
+      const isMod=exH!==null&&Math.abs(exH-shH)>0.001;
+      const isNew=exH===null;
+      await setDoc(recordDoc(r.id),{...r,syncStatus:'synced',sheetModified:isMod,createdAt:r.start},{merge:true});
+      const dl=r.start?`${new Date(r.start).getMonth()+1}/${new Date(r.start).getDate()}`:'';
+      if (isNew) { newCnt++; logs.push({type:'new',text:`${r.projectName} ${dl} ${shH.toFixed(2)}h`}); }
+      else if (isMod) { modCnt++; logs.push({type:'modified',text:`${r.projectName} ${dl}: ${exH.toFixed(2)}h → ${shH.toFixed(2)}h`}); }
+      else { okCnt++; logs.push({type:'ok',text:`${r.projectName} ${dl} ${shH.toFixed(2)}h`}); }
     }
-    alert(`${data.records.length}件を同期しました`);
+    const logEl=document.getElementById('sync-log-content');
+    if (logEl) {
+      logEl.innerHTML=`
+        <div class="sync-summary">合計 ${data.records.length}件 ｜ 新規 ${newCnt}件 ｜ 修正 ${modCnt}件 ｜ 変更なし ${okCnt}件</div>
+        ${logs.map(l=>`
+          <div class="log-item log-${l.type}">
+            <span class="log-icon">${l.type==='modified'?'✎':l.type==='new'?'＋':'✓'}</span>
+            <span class="log-text">${l.text}</span>
+          </div>
+        `).join('')}
+      `;
+    }
+    openModal('sync-log-modal');
   } catch(e) {
-    alert('エラー: ' + e.message);
+    alert('エラー: '+e.message);
   } finally {
-    btn.textContent = '↓同期';
-    btn.disabled = false;
+    btn.textContent='↓同期'; btn.disabled=false;
   }
 };
 
-// Service Worker
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+function renderUserChip() {
+  if (!currentUser) return;
+  const av=document.getElementById('chip-avatar'), nm=document.getElementById('chip-name');
+  if (!av||!nm) return;
+  const name=currentUser.displayName||currentUser.email||'ユーザー';
+  nm.textContent=name.split(' ')[0];
+  if (currentUser.photoURL) {
+    const img=document.createElement('img'); img.src=currentUser.photoURL; img.className='user-avatar'; av.replaceWith(img);
+  } else { av.textContent=name[0].toUpperCase(); }
+  const info=document.getElementById('account-info');
+  if (info) {
+    info.innerHTML=`
+      ${currentUser.photoURL?`<img src="${currentUser.photoURL}" class="account-photo"/>`:`<div class="account-photo-initials">${name[0].toUpperCase()}</div>`}
+      <div class="account-detail"><div class="account-name">${currentUser.displayName||''}</div><div class="account-email">${currentUser.email||''}</div></div>
+    `;
+  }
+}
 
+window.changeMonth = (d) => {
+  S.curMonth+=d;
+  if (S.curMonth>11){S.curMonth=0;S.curYear++;} if (S.curMonth<0){S.curMonth=11;S.curYear--;}
+  document.getElementById('month-label').textContent=`${S.curYear}.${pad(S.curMonth+1)}`;
+  renderLog(); renderMonthly(); renderProjects();
+};
+
+window.switchTab = (name) => {
+  ['clock','log','monthly'].forEach(t=>{
+    document.getElementById('panel-'+t).classList.toggle('active',t===name);
+    document.getElementById('tab-'+t).classList.toggle('active',t===name);
+  });
+  document.getElementById('content').scrollTop=0;
+};
+
+window.openModal  = (id) => { if(id==='gas-modal') document.getElementById('gas-url-input').value=S.gasUrl; document.getElementById(id).classList.add('open'); };
+window.closeModal = (id) => document.getElementById(id).classList.remove('open');
+window.bgClick    = (e,id) => { if(e.target===e.currentTarget) closeModal(id); };
+
+function showScreen(name) {
+  document.getElementById('screen-loading').style.display=name==='loading'?'flex':'none';
+  document.getElementById('screen-login').style.display=name==='login'?'flex':'none';
+  document.getElementById('screen-app').style.display=name==='app'?'flex':'none';
+  if (name==='app') document.getElementById('month-label').textContent=`${S.curYear}.${pad(S.curMonth+1)}`;
+}
+
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault(); deferredPrompt=e;
+  if (!matchMedia('(display-mode: standalone)').matches) document.getElementById('install-banner').classList.add('show');
+});
+window.installPWA=()=>{
+  if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(()=>{ deferredPrompt=null; document.getElementById('install-banner').classList.remove('show'); }); }
+  else { alert('📱 iOSでホーム画面に追加：\nSafariの共有ボタン（↑）→「ホーム画面に追加」'); }
+};
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body>
 </html>
